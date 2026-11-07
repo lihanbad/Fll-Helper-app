@@ -29,9 +29,23 @@ import org.jetbrains.compose.resources.painterResource
 import fllscorer.app.shared.generated.resources.*
 import fllscorer.app.shared.generated.resources.Res
 
-private val BLACK = Color(0xFF0A0A0A)
-private val WHITE = Color(0xFFFAFAFA)
-private val GRAY = Color(0xFF8A8A8A)
+// ---------------------------------------------------------------- THEMES
+
+private enum class AppTheme(val id: String, val label: String, val ink: Int, val paper: Int, val mute: Int) {
+    PAPER("PAPER", "PAPER (classic B/W)", 0xFF0A0A0A.toInt(), 0xFFFAFAFA.toInt(), 0xFF8A8A8A.toInt()),
+    NIGHT("NIGHT", "NIGHT MODE", 0xFFE8E8EA.toInt(), 0xFF101014.toInt(), 0xFF87878F.toInt()),
+    OCEAN("OCEAN", "OCEAN", 0xFF0B2431.toInt(), 0xFFE9F3F6.toInt(), 0xFF5D7A85.toInt()),
+    MOSS("MOSS", "MOSS", 0xFF14281D.toInt(), 0xFFF2F5EC.toInt(), 0xFF63725F.toInt()),
+    CLAY("CLAY", "CLAY", 0xFF3B1F14.toInt(), 0xFFF7EFE6.toInt(), 0xFF85655A.toInt()),
+}
+
+private object Theme {
+    var current by mutableStateOf(AppTheme.PAPER)
+}
+
+private val BLACK get() = Color(Theme.current.ink)
+private val WHITE get() = Color(Theme.current.paper)
+private val GRAY get() = Color(Theme.current.mute)
 private val MONO = FontFamily.Monospace
 
 private data class AppTheme(val name: String, val accent: Color)
