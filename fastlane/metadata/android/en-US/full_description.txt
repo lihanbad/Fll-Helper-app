@@ -1,0 +1,10 @@
+An unofficial companion for teams playing FIRST LEGO League BIOGLOW.
+
+FEATURES
+• Score Founders and Future Edition missions.
+• Review mission details, rules and scoring notes.
+• Use the 2:30 match timer and practice guide.
+• Open official model-building instruction resources.
+• Pick an edition and colour theme during first-run setup.
+
+FLL Helper is an independent community project and is not endorsed by FIRST or the LEGO Group. Game materials and trademarks remain the property of their respective owners.
