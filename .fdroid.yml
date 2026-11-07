@@ -1,0 +1,22 @@
+Categories:
+  - Science & Education
+License: MIT
+AntiFeatures:
+  - NonFreeAssets
+AuthorName: Lihan Badenhorst
+AuthorEmail: lihan@theroundeyepirates.com
+SourceCode: https://github.com/lihanbad/Fll-Helper-app
+IssueTracker: https://github.com/lihanbad/Fll-Helper-app/issues
+Changelog: https://github.com/lihanbad/Fll-Helper-app/releases
+RepoType: git
+Repo: https://github.com/lihanbad/Fll-Helper-app.git
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    gradle:
+      - fdroid
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

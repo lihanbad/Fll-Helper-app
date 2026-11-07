@@ -31,31 +31,25 @@ import fllscorer.app.shared.generated.resources.Res
 
 // ---------------------------------------------------------------- THEMES
 
-private enum class AppTheme(val id: String, val label: String, val ink: Int, val paper: Int, val mute: Int) {
-    PAPER("PAPER", "PAPER (classic B/W)", 0xFF0A0A0A.toInt(), 0xFFFAFAFA.toInt(), 0xFF8A8A8A.toInt()),
-    NIGHT("NIGHT", "NIGHT MODE", 0xFFE8E8EA.toInt(), 0xFF101014.toInt(), 0xFF87878F.toInt()),
-    OCEAN("OCEAN", "OCEAN", 0xFF0B2431.toInt(), 0xFFE9F3F6.toInt(), 0xFF5D7A85.toInt()),
-    MOSS("MOSS", "MOSS", 0xFF14281D.toInt(), 0xFFF2F5EC.toInt(), 0xFF63725F.toInt()),
-    CLAY("CLAY", "CLAY", 0xFF3B1F14.toInt(), 0xFFF7EFE6.toInt(), 0xFF85655A.toInt()),
-}
-
-private object Theme {
-    var current by mutableStateOf(AppTheme.PAPER)
-}
-
-private val BLACK get() = Color(Theme.current.ink)
-private val WHITE get() = Color(Theme.current.paper)
-private val GRAY get() = Color(Theme.current.mute)
 private val MONO = FontFamily.Monospace
 
-private data class AppTheme(val name: String, val accent: Color)
+/**
+ * One AppTheme = a full journal palette (ink on paper) plus an accent.
+ * No purple anywhere (dropped the old VIOLET option).
+ */
+private data class AppTheme(val name: String, val accent: Color, val ink: Int, val paper: Int, val mute: Int)
 private val appThemes = listOf(
-    AppTheme("MINT", Color(0xFF00A884)),
-    AppTheme("OCEAN", Color(0xFF1677D2)),
-    AppTheme("SUNSET", Color(0xFFD45A32)),
-    AppTheme("VIOLET", Color(0xFF7952B3)),
+    AppTheme("MINT",   Color(0xFF00A884), 0xFF0A1412.toInt(), 0xFFF3FAF7.toInt(), 0xFF6E8B80.toInt()),
+    AppTheme("OCEAN",  Color(0xFF0E7BD8), 0xFF0B2431.toInt(), 0xFFE9F3F6.toInt(), 0xFF5D7A85.toInt()),
+    AppTheme("SUNSET", Color(0xFFD45A32), 0xFF3B1F14.toInt(), 0xFFFDF4EC.toInt(), 0xFF8A6A5C.toInt()),
+    AppTheme("NIGHT",  Color(0xFF2EC4B6), 0xFFE8E8EA.toInt(), 0xFF101014.toInt(), 0xFF87878F.toInt()),
+    AppTheme("PAPER",  Color(0xFF0A0A0A), 0xFF0A0A0A.toInt(), 0xFFFAFAFA.toInt(), 0xFF8A8A8A.toInt()),
 )
 private var selectedTheme by mutableStateOf(appThemes.first())
+
+private val BLACK get() = Color(selectedTheme.ink)
+private val WHITE get() = Color(selectedTheme.paper)
+private val GRAY get() = Color(selectedTheme.mute)
 
 private class ScoreState {
     /** Stable id -> count/checked. */
@@ -168,14 +162,23 @@ fun App(
     var setupDone by remember(setupRequired) { mutableStateOf(!setupRequired) }
     var tab by remember { mutableStateOf(0) }
     var edition by remember(initialEdition) {
-        mutableStateOf(Edition.entries.firstOrNull { it.name == initialEdition } ?: Edition.FOUNDERS)
+        val persisted = loadSetting("edition")
+        mutableStateOf(
+            Edition.entries.firstOrNull { persisted != null && it.name == persisted }
+                ?: Edition.entries.firstOrNull { it.name == initialEdition }
+                ?: Edition.FOUNDERS
+        )
     }
     var dropdownOpen by remember { mutableStateOf(false) }
     var themeMenuOpen by remember { mutableStateOf(false) }
     val tabs = listOf("MISSIONS", "ITEMS", "SCORER", "BOOK", "GUIDE", "BUILD")
 
     LaunchedEffect(initialTheme) {
-        selectedTheme = appThemes.firstOrNull { it.name == initialTheme } ?: appThemes.first()
+        val persisted = loadSetting("theme")
+        selectedTheme =
+            appThemes.firstOrNull { persisted != null && it.name == persisted }
+                ?: appThemes.firstOrNull { it.name == initialTheme }
+                ?: appThemes.first()
     }
 
     if (!setupDone) {
@@ -214,8 +217,9 @@ fun App(
                                 Text(theme.name, color = theme.accent,
                                     fontFamily = MONO, fontWeight = FontWeight.Bold, fontSize = 11.sp,
                                     modifier = Modifier.fillMaxWidth().clickable {
-                                        selectedTheme = theme
-                                        themeMenuOpen = false
+                                         selectedTheme = theme
+                                         saveSetting("theme", theme.name)
+                                         themeMenuOpen = false
                                     }.padding(horizontal = 12.dp, vertical = 8.dp))
                             }
                         }
@@ -250,6 +254,7 @@ fun App(
                                         .background(if (e == edition) WHITE else BLACK)
                                         .clickable {
                                             edition = e
+                                            saveSetting("edition", e.name)
                                             dropdownOpen = false
                                         }
                                         .fillMaxWidth()
